@@ -10,7 +10,6 @@ import UIKit
 
 class BattingAverageViewController: UIViewController, UITextFieldDelegate
 {
-    
     @IBOutlet weak var atBatsText: UITextField!
     @IBOutlet weak var numberOfHitsText: UITextField!
     @IBOutlet weak var averageText: UITextField!

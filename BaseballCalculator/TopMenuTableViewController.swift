@@ -7,19 +7,33 @@
 //
 
 import UIKit
+import NendAd
 
-class TopMenuTableViewController: UITableViewController {
+class TopMenuTableViewController: UITableViewController, NADViewDelegate {
 
     @IBOutlet weak var averageLabel: UILabel!
     @IBOutlet weak var obpLabel: UILabel!
     @IBOutlet weak var slgLabel: UILabel!
     @IBOutlet weak var opsLabel: UILabel!
     
+    private var nadView: NADView!
+    
     let userDefaults = UserDefaults.standard
 
     override func viewDidLoad() {
        super.viewDidLoad()
-
+       
+        nadView = NADView(frame: CGRect(x: 0, y: 0, width: 320, height: 50))
+       
+        nadView = NADView(isAdjustAdSize: true)
+       // nadView.setNendID("管理画面より発行された apiKey", spotID: "管理画面より発行された spotID")
+       
+        //サンプル
+        nadView.setNendID("a6eca9dd074372c898dd1df549301f277c53f2b9", spotID: "3172")
+        nadView.delegate = self
+        nadView.load()
+        self.view.addSubview(nadView)
+        
     }
     override func viewWillAppear(_ animated: Bool) {
 
@@ -31,8 +45,45 @@ class TopMenuTableViewController: UITableViewController {
         slgLabel.text = resultSlg
         let resultOps = userDefaults.string(forKey: "ops")
         opsLabel.text = resultOps
-   }  
+        //nadView.resume()
+   }
+    override func viewWillDisappear(_ animated: Bool) {
+        nadView.pause()
+    }
     
+    func nadViewDidFinishLoad(_ adView: NADView!) {
+
+  nadView.frame = CGRect(
+    x: (self.view.frame.size.width - nadView.frame.size.width) / 2,
+    y: self.view.frame.size.height - nadView.frame.size.height,
+    width: self.nadView.frame.size.width,
+    height: self.nadView.frame.size.height)
+
+        self.view.addSubview(self.nadView)
+   }
+    func nadViewDidClickAd(_ adView: NADView!) {
+        print("delegate nadViewDidClickAd")
+    }
+    func nadViewDidClickInformation(_ adView: NADView!) {
+       
+    }
+    func nadViewDidFail(toReceiveAd adView: NADView!) {
+        let error: NSError = adView.error as NSError
+        switch (error.code) {
+        case NADViewErrorCode.NADVIEW_AD_SIZE_TOO_LARGE.rawValue:
+            break
+        case NADViewErrorCode.NADVIEW_INVALID_RESPONSE_TYPE.rawValue:
+            break
+        case NADViewErrorCode.NADVIEW_FAILED_AD_REQUEST.rawValue:
+            break
+            case NADViewErrorCode.NADVIEW_FAILED_AD_DOWNLOAD.rawValue:
+            break
+            case NADViewErrorCode.NADVIEW_AD_SIZE_DIFFERENCES.rawValue:
+            break
+        default:
+            break
+        }
+    }
 
     // MARK: - Table view data source
 
